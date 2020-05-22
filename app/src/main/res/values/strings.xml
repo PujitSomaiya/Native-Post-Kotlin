@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Native Post Kotlin</string>
+    <string name="posts">POSTS</string>
+    <string name="next">next</string>
 </resources>
