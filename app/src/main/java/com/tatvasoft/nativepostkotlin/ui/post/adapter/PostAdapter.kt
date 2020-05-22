@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.listitem_post.view.*
 
 class PostAdapter ():
     PagedListAdapter<HitsItem, PostAdapter.PostViewHolder>(USER_COMPARATOR) {
-
+//developer
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view =
