@@ -8,16 +8,17 @@ import com.tatvasoft.nativepostkotlin.ui.post.model.PostResponseModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.http.POST
 
-class UserDataSource : PageKeyedDataSource<Int, PostResponseModel>() {
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, PostResponseModel>) {
+class PostDataSource : PageKeyedDataSource<Int, HitsItem>() {
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, HitsItem>) {
         val service = ApiServiceBuilder.buildService(ApiService::class.java)
         val call = service.getPosts(params.key)
         call.enqueue(object : Callback<PostResponseModel> {
             override fun onResponse(call: Call<PostResponseModel>, response: Response<PostResponseModel>) {
                 if (response.isSuccessful) {
                     val apiResponse = response.body()!!
-                    val responseItems = apiResponse.page
+                    val responseItems = apiResponse.hits
                     val key = if (params.key > 1) params.key - 1 else 0
                     responseItems?.let {
                         callback.onResult(responseItems, key)
@@ -28,14 +29,14 @@ class UserDataSource : PageKeyedDataSource<Int, PostResponseModel>() {
             }
         })
     }
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, PostResponseModel>) {
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, HitsItem>) {
         val service = ApiServiceBuilder.buildService(ApiService::class.java)
         val call = service.getPosts(FIRST_PAGE)
         call.enqueue(object : Callback<PostResponseModel> {
             override fun onResponse(call: Call<PostResponseModel>, response: Response<PostResponseModel>) {
                 if (response.isSuccessful) {
                     val apiResponse = response.body()!!
-                    val responseItems = apiResponse.
+                    val responseItems = apiResponse.hits
                     responseItems?.let {
                         callback.onResult(responseItems, null, FIRST_PAGE + 1)
                     }
@@ -45,14 +46,14 @@ class UserDataSource : PageKeyedDataSource<Int, PostResponseModel>() {
             }
         })
     }
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, PostResponseModel>) {
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, HitsItem>) {
         val service = ApiServiceBuilder.buildService(ApiService::class.java)
         val call = service.getPosts(params.key)
         call.enqueue(object : Callback<PostResponseModel> {
             override fun onResponse(call: Call<PostResponseModel>, response: Response<PostResponseModel>) {
                 if (response.isSuccessful) {
                     val apiResponse = response.body()!!
-                    val responseItems = apiResponse.
+                    val responseItems = apiResponse.hits
                     val key = params.key + 1
                     responseItems?.let {
                         callback.onResult(responseItems, key)
