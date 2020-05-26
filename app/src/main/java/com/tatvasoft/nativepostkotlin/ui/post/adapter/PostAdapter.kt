@@ -1,21 +1,29 @@
 package com.tatvasoft.nativepostkotlin.ui.post.adapter
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.getColor
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textview.MaterialTextView
 import com.tatvasoft.nativepostkotlin.R
 import com.tatvasoft.nativepostkotlin.interfaces.RecyclerInterface
 import com.tatvasoft.nativepostkotlin.ui.post.model.HitsItem
 import kotlinx.android.synthetic.main.listitem_post.view.*
 
-class PostAdapter ():
+class PostAdapter(context: Context, recyclerInterface: RecyclerInterface) :
     PagedListAdapter<HitsItem, PostAdapter.PostViewHolder>(USER_COMPARATOR) {
-//developer
+
+    private var context: Context? = context
+    private var recyclerViewItemClick: RecyclerInterface? = recyclerInterface
+    private var checkNumber = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view =
@@ -23,54 +31,78 @@ class PostAdapter ():
         return PostViewHolder(view)
     }
 
-
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val posts = getItem(position)
-        posts?.let { holder.bind(it) }
-    }
+        val tvTitle = holder.tvTitle
+        val tvCreated = holder.tvCreated
+        val tvAuthor = holder.tvAuthor
+        val tvStoryId = holder.tvStoryId
+        val tvPageNumber = holder.tvPageNumber
+        val clMain = holder.clMain
+        val swActivation = holder.swActivation
+        val chkSelected = holder.chkSelected
 
-    var recyclerViewItemClick: RecyclerInterface? = null
-    constructor(recyclerInterface: RecyclerInterface) : this() {
-        this.recyclerViewItemClick=recyclerInterface
-    }
+        tvTitle.text = "Title:" + posts?.title
+        tvCreated.text = "Created At: " + posts?.createdAt
+        tvAuthor.text = "Author: " + posts?.author
+        tvStoryId.text = "Story Id: " + posts?.objectID
+        tvPageNumber.text = "Points: " + posts?.points.toString()
 
-    class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var checkNumber = 0
-        var res: Resources = view.context.resources
-        private val tvTitle = view.tvTitle
-        private val tvPageNumber = view.tvPageNumber
-        private val tvCreated = view.tvCreated
-        private val tvAuthor = view.tvAuthor
-        private val tvStoryId = view.tvStoryId
-        private val swActivation = view.swActivation
-        private val clMain = view.clMain
-        private val chkSelected = view.chkSelected
-
-        @SuppressLint("SetTextI18n")
-        fun bind(hitsItems: HitsItem) {
-            tvTitle?.text = "Title:" + hitsItems.title
-            tvCreated?.text = "Created At: " + hitsItems.createdAt
-            tvAuthor?.text = "Author: " + hitsItems.author
-            tvStoryId?.text = "Story Id: " + hitsItems.objectID
-            tvPageNumber?.text = "Points: " + hitsItems.points.toString()
-
-            clMain?.setOnClickListener {
-                if (chkSelected.isChecked) {
-                    checkNumber--
-                    chkSelected.isChecked = false
-                    clMain.setBackgroundColor(res.getColor(R.color.colorWhite))
-                } else {
-                    checkNumber++
-                    chkSelected.isChecked = true
-                    clMain.setBackgroundColor(res.getColor(R.color.design_default_color_error))
+        clMain.setOnClickListener {
+            if (chkSelected.isChecked) {
+                checkNumber--
+                chkSelected.isChecked = false
+                context?.let { it1 -> getColor(it1, R.color.colorWhite) }?.let { it2 ->
+                    clMain.setBackgroundColor(
+                        it2
+                    )
                 }
-
+            } else {
+                checkNumber++
+                chkSelected.isChecked = true
+                context?.let { it1 -> getColor(it1, R.color.design_default_color_error) }
+                    ?.let { it2 ->
+                        clMain.setBackgroundColor(
+                            it2
+                        )
+                    }
             }
-
+            recyclerViewItemClick?.onItemClick(checkNumber)
         }
 
+        swActivation.setOnClickListener {
+            if (swActivation.isChecked) {
+                notifyDataSetChanged()
+                swActivation.isChecked = false
+                if (chkSelected.isChecked) {
+                    checkNumber--
+                    chkSelected.setChecked(false)
+                    context?.let { it1 -> getColor(it1, R.color.colorWhite) }?.let { it2 ->
+                        clMain.setBackgroundColor(
+                            it2
+                        )
+                    }
+                    recyclerViewItemClick?.onItemClick(checkNumber)
+                }
+            }
+        }
+
+//        posts?.let { holder.bind(it) }
     }
 
+
+    class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvTitle: MaterialTextView = view.tvTitle
+        val tvPageNumber: MaterialTextView = view.tvPageNumber
+        val tvCreated: MaterialTextView = view.tvCreated
+        val tvAuthor: MaterialTextView = view.tvAuthor
+        val tvStoryId: MaterialTextView = view.tvStoryId
+        val swActivation: SwitchMaterial = view.swActivation
+        val clMain: ConstraintLayout = view.clMain
+        val chkSelected: MaterialCheckBox = view.chkSelected
+
+    }
 
     companion object {
         private val USER_COMPARATOR = object : DiffUtil.ItemCallback<HitsItem>() {

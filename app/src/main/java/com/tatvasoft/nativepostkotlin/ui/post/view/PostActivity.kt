@@ -21,7 +21,7 @@ class PostActivity : AppCompatActivity(), LifecycleOwner, RecyclerInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
-        val adapter = PostAdapter(this)
+        val adapter = PostAdapter(this,this)
         val tvCheckNumber = tvCheckNumber
         tvCheckNumber.findViewById<TextView>(R.id.tvCheckNumber)
         recyclerPosts.layoutManager = LinearLayoutManager(this)
@@ -49,7 +49,7 @@ private fun fetchData(
     adapter: PostAdapter,
     recyclerPosts: RecyclerView
 ) {
-    itemViewModel.userPagedList.observe(context, Observer {
+    itemViewModel.postList.observe(context, Observer {
         adapter.submitList(it)
     })
     recyclerPosts.adapter = adapter
