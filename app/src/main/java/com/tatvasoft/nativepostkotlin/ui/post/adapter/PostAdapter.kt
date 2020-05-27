@@ -1,25 +1,23 @@
 package com.tatvasoft.nativepostkotlin.ui.post.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.IntegerRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import com.tatvasoft.nativepostkotlin.R
 import com.tatvasoft.nativepostkotlin.interfaces.RecyclerInterface
 import com.tatvasoft.nativepostkotlin.ui.post.model.HitsItem
 import kotlinx.android.synthetic.main.listitem_post.view.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 
-class PostAdapter(recyclerInterface: RecyclerInterface,number : Int) :
+class PostAdapter(recyclerInterface: RecyclerInterface, number: Int) :
     PagedListAdapter<HitsItem, PostAdapter.PostViewHolder>(USER_COMPARATOR) {
 
     private var recyclerViewItemClick: RecyclerInterface? = recyclerInterface
@@ -41,9 +39,19 @@ class PostAdapter(recyclerInterface: RecyclerInterface,number : Int) :
         val tvStoryId = holder.tvStoryId
         val tvPageNumber = holder.tvPageNumber
         val swActivation = holder.swActivation
+        @SuppressLint("SimpleDateFormat") val dateFormat =
+            SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z")
+        var sourceDate: Date? = Date()
+        try {
+            sourceDate = dateFormat.parse(posts?.createdAt)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
 
+        @SuppressLint("SimpleDateFormat") val targetFormat =
+            SimpleDateFormat("dd-MM-yyyy")
         tvTitle.text = "Title:" + posts?.title
-        tvCreated.text = "Created At: " + posts?.createdAt
+        tvCreated.text = "Created At: " + targetFormat.format(sourceDate)
         tvAuthor.text = "Author: " + posts?.author
         tvStoryId.text = "Story Id: " + posts?.objectID
         tvPageNumber.text = "Points: " + posts?.points.toString()
