@@ -8,7 +8,6 @@ import com.tatvasoft.nativepostkotlin.ui.post.model.PostResponseModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.POST
 
 class PostDataSource : PageKeyedDataSource<Int, HitsItem>() {
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, HitsItem>) {

@@ -7,8 +7,8 @@ import com.tatvasoft.nativepostkotlin.ui.post.model.HitsItem
 class PostDataSourceFactory : DataSource.Factory<Int, HitsItem>() {
     val postLiveDataSource = MutableLiveData<PostDataSource>()
     override fun create(): DataSource<Int, HitsItem> {
-        val userDataSource = PostDataSource()
-        postLiveDataSource.postValue(userDataSource)
-        return userDataSource
+        val postDataSource = PostDataSource()
+        postLiveDataSource.postValue(postDataSource)
+        return postDataSource
     }
 }

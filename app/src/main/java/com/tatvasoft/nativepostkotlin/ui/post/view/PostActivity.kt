@@ -21,14 +21,14 @@ class PostActivity : AppCompatActivity(), LifecycleOwner, RecyclerInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
-        val adapter = PostAdapter(this,this)
         val tvCheckNumber = tvCheckNumber
         tvCheckNumber.findViewById<TextView>(R.id.tvCheckNumber)
         recyclerPosts.layoutManager = LinearLayoutManager(this)
         val itemViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        fetchData(this, itemViewModel, adapter, recyclerPosts)
+        fetchData(this, itemViewModel,  PostAdapter(this,0), recyclerPosts)
         swipeToRefresh.setOnRefreshListener {
-            fetchData(this, itemViewModel, adapter, recyclerPosts)
+            fetchData(this, itemViewModel,  PostAdapter(this,0), recyclerPosts)
+            onItemClick(0)
             swipeToRefresh.isRefreshing = false
         }
     }
@@ -52,6 +52,11 @@ private fun fetchData(
     itemViewModel.postList.observe(context, Observer {
         adapter.submitList(it)
     })
+    for (i in 0 until adapter.itemCount) {
+        if (itemViewModel.postList.getValue()?.get(i)!!.isCheck) {
+            itemViewModel.postList.getValue()?.get(i)?.isCheck = false
+        }
+    }
     recyclerPosts.adapter = adapter
 }
 
